@@ -37,7 +37,25 @@ public class BinaryTree
     }
     public string InOrder()
     {
-        return "";
+        if (Root == null)
+        {
+            return string.Empty;
+        }
+        List<int> values = new List<int>();
+        InOrderRecursive(Root, values);
+
+        return string.Join(", ", values);
+    }
+
+    private void InOrderRecursive(Node? node, List<int> values)
+    {
+        if(node == null)
+        {
+            return;
+        }
+        InOrderRecursive(node.Left, values);
+        values.Add(node.Value);
+        InOrderRecursive(node.Right, values);
     }
     public int Height()
     {
