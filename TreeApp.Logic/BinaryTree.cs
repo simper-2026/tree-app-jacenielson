@@ -59,7 +59,17 @@ public class BinaryTree
     }
     public int Height()
     {
-        return 0;
+        return RecursiveHeight(Root);
+    }
+    private int RecursiveHeight(Node? node)
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+        int leftHeight = RecursiveHeight(node.Left);
+        int rightHeight = RecursiveHeight(node.Right);
+        return 1 + Math.Max(leftHeight, rightHeight);
     }
     public string ToMermaid()
     {
