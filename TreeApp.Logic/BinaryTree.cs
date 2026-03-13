@@ -45,6 +45,7 @@ public class BinaryTree
     }
     public string ToMermaid()
     {
+        int links = 0;
         if(Root == null)
         {
             return "graph TD;\n";
@@ -53,9 +54,9 @@ public class BinaryTree
         {
             return $"graph TD;\n{Root.Value}\n";
         }
-        return $"graph TD;\n{ToMermaid(Root)}\n";
+        return $"graph TD;\n{ToMermaid(Root, ref links)}\n";
     }
-    private string ToMermaid(Node? node)
+    private string ToMermaid(Node? node, ref int links)
     {
         if (node == null || node.Right == null && node.Left == null)
         {
@@ -65,24 +66,28 @@ public class BinaryTree
         if(node.Left != null)
         {
             result += $"{node.Value} --> {node.Left.Value} \n";
-            result += ToMermaid(node.Left);
+            links++;
+            result += ToMermaid(node.Left, ref links);
         }
         else
         {
             result += $"{node.Value} --> _phl{node.Value}[ ] \n";
-            result += "linkStyle 1 stroke:none,stroke-width:0,fill:none \n";
+            result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _phl{node.Value} fill:none,stroke:none,color:none \n";
+            links++;
         }
         if(node.Right != null)
         {
             result += $"{node.Value} --> {node.Right.Value} \n";
-            result += ToMermaid(node.Right);
+            links++;
+            result += ToMermaid(node.Right, ref links);
         }
         else
         {
             result += $"{node.Value} --> _phr{node.Value}[ ] \n";
-            result += "linkStyle 1 stroke:none,stroke-width:0,fill:none \n";
+            result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _phr{node.Value} fill:none, stroke:none,color:none \n";
+            links++;
         }
         return result;
     }
