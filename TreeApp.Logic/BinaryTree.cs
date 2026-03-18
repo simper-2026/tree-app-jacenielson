@@ -8,9 +8,9 @@ public class BinaryTree
             Root = new Node(value);
             return;
         }
-        RecursiveInsert(Root, value);
+        Root = RecursiveInsert(Root, value);
     }
-    private void RecursiveInsert(Node current, int value)
+    private Node RecursiveInsert(Node current, int value)
     {
         if (value < current.Value)
         {
@@ -20,20 +20,21 @@ public class BinaryTree
             }
             else
             {
-                RecursiveInsert(current.Left, value);
+                current.Left = RecursiveInsert(current.Left, value);
             }
         }
         if (value > current.Value)
         {
-            if(current.Right == null)
+            if (current.Right == null)
             {
                 current.Right = new Node(value);
             }
             else
             {
-                RecursiveInsert(current.Right, value);
+                current.Right = RecursiveInsert(current.Right, value);
             }
         }
+        return Balance(current);
     }
     public string InOrder()
     {
@@ -49,7 +50,7 @@ public class BinaryTree
 
     private void InOrderRecursive(Node? node, List<int> values)
     {
-        if(node == null)
+        if (node == null)
         {
             return;
         }
@@ -74,7 +75,7 @@ public class BinaryTree
     public string ToMermaid()
     {
         int links = 0;
-        if(Root == null)
+        if (Root == null)
         {
             return "graph TD;\n";
         }
@@ -91,32 +92,81 @@ public class BinaryTree
             return string.Empty;
         }
         string result = string.Empty;
-        if(node.Left != null)
+        if (node.Left != null)
         {
-            result += $"{node.Value} --> {node.Left.Value} \n";
+            result += $"{node.Value}[{node.Value} h:{RecursiveHeight(node)}]  --> {node.Left.Value}[{node.Left.Value} h:{RecursiveHeight(node.Left)} ] \n";
             links++;
             result += ToMermaid(node.Left, ref links);
         }
         else
         {
-            result += $"{node.Value} --> _phl{node.Value}[ ] \n";
+            result += $"{node.Value}[{node.Value} h:{RecursiveHeight(node)}] --> _phl{node.Value} \n";
             result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _phl{node.Value} fill:none,stroke:none,color:none \n";
             links++;
         }
-        if(node.Right != null)
+        if (node.Right != null)
         {
-            result += $"{node.Value} --> {node.Right.Value} \n";
+            result += $"{node.Value}[{node.Value} h:{RecursiveHeight(node)}] --> {node.Right.Value}[{node.Right.Value} h:{RecursiveHeight(node.Right)} ] \n";
             links++;
             result += ToMermaid(node.Right, ref links);
         }
         else
         {
-            result += $"{node.Value} --> _phr{node.Value}[ ] \n";
+            result += $"{node.Value}[{node.Value} h:{RecursiveHeight(node)}] --> _phr{node.Value}[ ] \n";
             result += $"linkStyle {links} stroke:none,stroke-width:0,fill:none \n";
             result += $"style _phr{node.Value} fill:none, stroke:none,color:none \n";
             links++;
         }
         return result;
     }
+    private Node RotateRight(Node z)
+    {
+        Node y = z.Left;
+        Node t3 = y.Right;  
+        y.Right = z;
+        z.Left = t3;
+        return y;               
+    }
+    private Node RotateLeft(Node z)
+    {
+        Node y = z.Right;
+        Node t2 = y.Left;
+        y.Left = z;
+        z.Right = t2;
+        return y;
+    }
+    private Node Balance(Node node)
+    {
+        int balanceFactor = GetBalanceFactor(node);
+
+        if (balanceFactor > 1)
+        {
+            if (GetBalanceFactor(node.Left) < 0)
+            {
+                node.Left = RotateLeft(node.Left);
+            }
+            return RotateRight(node);
+        }
+        if(balanceFactor < -1)
+        {
+            if(GetBalanceFactor(node.Right) > 0)
+            {
+                node.Right = RotateRight(node.Right);
+            }
+            return RotateLeft(node);
+        }
+        return node;
+    }
+    private int GetBalanceFactor(Node? node)
+    {
+        if (node == null)
+        {
+            return 0;
+        }
+        return RecursiveHeight(node.Left)-RecursiveHeight(node.Right);
+    }
+
+
+
 }
